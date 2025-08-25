@@ -4,7 +4,7 @@ pipeline {
     stage('checkout') {
       steps {
         sshagent(['log-in-to-github']) {
-          git branch: 'main', credentialsId: 'log-in-to-github' , url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
+          git branch: 'main', credentialsId: 'log-in-to-github' , url: 'git@github.com:noaeisnkut/my_Jenkins_project.git', hostKeyVerification: 'acceptFirstConnection'
         }
       }
     }
@@ -48,7 +48,6 @@ pipeline {
     }
   }
 }
-
 
   
 
