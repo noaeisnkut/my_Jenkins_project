@@ -1,7 +1,5 @@
 pipeline {
   agent any
-  environment {
-    VERSION = "1.0"
   }
   stages {
     stage('checkout') {
@@ -24,8 +22,8 @@ pipeline {
         script {
           sh 'git config user.email "jenkins@my-company.com"'
           sh 'git config user.name "Jenkins"'
-          sh 'git add version.txt'
-          sh "git commit -m '[ci skip] Increment version to ${env.NEW_VERSION}'"
+          sh 'git add version.text'
+          sh "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
           sh 'git push origin main'
         }
       }
@@ -47,6 +45,7 @@ pipeline {
     }
   }
 }  
+
 
   
 
