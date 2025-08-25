@@ -1,10 +1,11 @@
 pipeline {
   agent any
-  }
   stages {
     stage('checkout') {
       steps {
-        git branch: 'main', credentialsId: 'log-in-to-github' , url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
+        sshagent(['log-in-to-github']) {
+          git branch: 'main', credentialsId: 'log-in-to-github' , url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
+        }
       }
     }
     stage('update version') {
@@ -20,11 +21,13 @@ pipeline {
     stage('Commit and Push Version') {
       steps {
         script {
-          sh 'git config user.email "jenkins@my-company.com"'
-          sh 'git config user.name "Jenkins"'
-          sh 'git add version.text'
-          sh "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
-          sh 'git push origin main'
+          sshagent(['log-in-to-github']) {
+            sh 'git config user.email "jenkins@my-company.com"'
+            sh 'git config user.name "Jenkins"'
+            sh 'git add version.text'
+            sh "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
+            sh 'git push origin main'
+          }
         }
       }
     }
@@ -44,7 +47,7 @@ pipeline {
       }
     }
   }
-}  
+}
 
 
   
