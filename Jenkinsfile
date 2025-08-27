@@ -4,7 +4,7 @@ pipeline {
         stage('Check for skip flag') {
             steps {
                 script {
-                    def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+                    def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
                     if (commitMessage.contains('[ci skip]')) {
                         echo "Commit message contains [ci skip], skipping build."
                         currentBuild.result = 'ABORTED'
