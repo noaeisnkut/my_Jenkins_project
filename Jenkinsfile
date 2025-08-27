@@ -1,29 +1,12 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
-            when {
-                not {
-                    expression {
-                        def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
-                        return commitMessage.contains('[ci skip]')
-                    }
-                }
-            }
             steps {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
             }
         }
         stage('Update Version') {
-            when {
-                not {
-                    expression {
-                        def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
-                        return commitMessage.contains('[ci skip]')
-                    }
-                }
-            }
             steps {
                 script {
                     def currentVersion = readFile('Version.text').trim()
@@ -39,14 +22,6 @@ pipeline {
             }
         }
         stage('Commit and Push Version') {
-            when {
-                not {
-                    expression {
-                        def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
-                        return commitMessage.contains('[ci skip]')
-                    }
-                }
-            }
             steps {
                 script {
                     bat 'git config user.email "jenkins@my-company.com"'
@@ -58,27 +33,11 @@ pipeline {
             }
         }
         stage('Build Project') {
-            when {
-                not {
-                    expression {
-                        def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
-                        return commitMessage.contains('[ci skip]')
-                    }
-                }
-            }
             steps {
                 bat 'echo Building project...'
             }
         }
         stage('Docker Build & Push') {
-            when {
-                not {
-                    expression {
-                        def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
-                        return commitMessage.contains('[ci skip]')
-                    }
-                }
-            }
             steps {
                 script {
                     bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
