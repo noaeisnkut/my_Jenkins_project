@@ -37,17 +37,16 @@ pipeline {
         bat 'echo building project...'
       }
     }
-    stage('docker build & push to DOCKER HUB') {
-      steps {
+stage('docker build & push to DOCKER HUB') {
+    steps {
         script {
-          def dockerImage = docker.build("noa10203040/simple_image:${env.NEW_VERSION}")
-          docker.withRegistry('https://registry.hub.docker.com', 'login-to-dockerhub') {
-            dockerImage.push()
-          }
+            bat 'docker context use desktop-linux'
+            def dockerImage = docker.build("noa10203040/simple_image:${env.NEW_VERSION}")
+            docker.withRegistry('https://registry.hub.docker.com', 'login-to-dockerhub') {
+                dockerImage.push()
+            }
         }
-      }
     }
-  }
 }
 
 
