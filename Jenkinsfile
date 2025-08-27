@@ -3,16 +3,21 @@ pipeline {
   stages {
     stage('checkout') {
       steps {
-        git branch: 'main', credentialsId: 'log-in-to-github' , url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
+        git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
       }
     }
     stage('update version') {
       steps {
         script {
           def currentVersion = readFile('version.text').trim()
-          def newVersionNumber = currentVersion.toInteger() + 1
-          writeFile file: 'version.text', text: "${newVersionNumber}"
-          env.NEW_VERSION = newVersionNumber
+          def parts = currentVersion.split('\\.')
+          def major = parts[0].toInteger()
+          def minor = parts[1].toInteger()
+          def patch = parts[2].toInteger()
+          patch += 1
+          def newVersion = "${major}.${minor}.${patch}"
+          writeFile file: 'version.text', text: newVersion
+          env.NEW_VERSION = newVersion
         }
       }
     }
@@ -27,7 +32,7 @@ pipeline {
         }
       }
     }
-    stage ('build') {
+    stage('build') {
       steps {
         sh 'echo "building project..."'
       }
@@ -44,5 +49,5 @@ pipeline {
     }
   }
 }
-  
+
 
