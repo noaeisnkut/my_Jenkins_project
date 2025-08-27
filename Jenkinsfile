@@ -6,6 +6,19 @@ pipeline {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
             }
         }
+
+        stage('Check Commit for CI Skip') {
+            steps {
+                script {
+                    def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+                    if (commitMessage.contains('[ci skip]')) {
+                        echo "Commit message contains '[ci skip]', skipping this build to prevent a build loop."
+                        error('Build aborted by Jenkinsfile due to [ci skip] tag.')
+                    }
+                }
+            }
+        }
+        
         stage('Update Version') {
             steps {
                 script {
@@ -47,7 +60,6 @@ pipeline {
         }
     }
 }
-
 
 
 
