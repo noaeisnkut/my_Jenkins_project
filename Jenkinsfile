@@ -39,10 +39,12 @@ pipeline {
         }
         stage('docker build & push to DOCKER HUB') {
             steps {
-                script {
-                    bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
-                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD%"
-                    bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
+                withCredentials([usernamePassword(credentialsId: 'login-to-dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
+                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD%"
+                        bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
+                    }
                 }
             }
         }
