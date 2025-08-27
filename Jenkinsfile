@@ -16,7 +16,7 @@ pipeline {
           def patch = parts[2].toInteger()
           patch += 1
           def newVersion = "${major}.${minor}.${patch}"
-          writeFile file: 'version.text', text: newVersion
+          writeFile file: 'Version.text', text: newVersion
           env.NEW_VERSION = newVersion
         }
       }
@@ -26,7 +26,7 @@ pipeline {
         script {
           bat "git config user.email \"jenkins@my-company.com\""
           bat "git config user.name \"Jenkins\""
-          bat "git add version.text"
+          bat "git add Version.text"
           bat "git commit -m \"[ci skip] Update version to ${env.NEW_VERSION}\""
           bat "git push origin main"
         }
