@@ -27,7 +27,7 @@ pipeline {
           bat 'git config user.email "jenkins@my-company.com"'
           bat 'git config user.name "Jenkins"'
           bat 'git add version.text'
-          bat "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
+          bat 'git commit -m "[ci skip] Update version to ${env.NEW_VERSION}"'
           bat 'git push origin main'
         }
       }
