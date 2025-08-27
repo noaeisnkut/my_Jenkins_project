@@ -24,17 +24,17 @@ pipeline {
     stage('Commit and Push Version') {
       steps {
         script {
-          bat 'git config user.email "jenkins@my-company.com"'
-          bat 'git config user.name "Jenkins"'
-          bat 'git add version.text'
-          bat 'git commit -m "[ci skip] Update version to ${env.NEW_VERSION}"'
-          bat 'git push origin main'
+          bat "git config user.email \"jenkins@my-company.com\""
+          bat "git config user.name \"Jenkins\""
+          bat "git add version.text"
+          bat "git commit -m \"[ci skip] Update version to ${env.NEW_VERSION}\""
+          bat "git push origin main"
         }
       }
     }
     stage('build') {
       steps {
-        sh 'echo "building project..."'
+        bat 'echo building project...'
       }
     }
     stage('docker build & push to DOCKER HUB') {
@@ -49,5 +49,6 @@ pipeline {
     }
   }
 }
+
 
 
