@@ -9,7 +9,7 @@ pipeline {
     stage('update version') {
       steps {
         script {
-          def currentVersion = readFile('version.text').trim()
+          def currentVersion = readFile('Version.text').trim()
           def parts = currentVersion.split('\\.')
           def major = parts[0].toInteger()
           def minor = parts[1].toInteger()
