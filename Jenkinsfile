@@ -1,6 +1,18 @@
 pipeline {
     agent any
     stages {
+        stage('Check for skip flag') {
+            steps {
+                script {
+                    def commitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+                    if (commitMessage.contains('[ci skip]')) {
+                        echo "Commit message contains [ci skip], skipping build."
+                        currentBuild.result = 'ABORTED'
+                        error('Build aborted due to [ci skip] flag.')
+                    }
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
@@ -47,4 +59,3 @@ pipeline {
         }
     }
 }
-
