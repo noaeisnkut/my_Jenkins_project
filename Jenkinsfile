@@ -24,11 +24,11 @@ pipeline {
     stage('Commit and Push Version') {
       steps {
         script {
-          sh 'git config user.email "jenkins@my-company.com"'
-          sh 'git config user.name "Jenkins"'
-          sh 'git add version.text'
-          sh "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
-          sh 'git push origin main'
+          bat 'git config user.email "jenkins@my-company.com"'
+          bat 'git config user.name "Jenkins"'
+          bat 'git add version.text'
+          bat "git commit -m '[ci skip] Update version to ${env.NEW_VERSION}'"
+          bat 'git push origin main'
         }
       }
     }
