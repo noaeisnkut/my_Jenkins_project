@@ -40,15 +40,14 @@ pipeline {
         stage('docker build & push to DOCKER HUB') {
             steps {
                 script {
-                    bat 'docker context use desktop-linux'
-                    def dockerImage = docker.build("noa10203040/simple_image:${env.NEW_VERSION}")
-                    docker.withRegistry('https://registry.hub.docker.com', 'login-to-dockerhub') {
-                        dockerImage.push()
-                    }
+                    bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD%"
+                    bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
                 }
             }
         }
     }
 }
+
 
 
