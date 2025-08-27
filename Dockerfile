@@ -1,2 +1,2 @@
 FROM alpine:latest
-CMD echo "This is a simple Docker."
+CMD echo "This is a simple Docker image."
