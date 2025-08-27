@@ -1,12 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
             }
         }
-        stage('update version') {
+        stage('Update Version') {
             steps {
                 script {
                     def currentVersion = readFile('Version.text').trim()
@@ -24,31 +24,30 @@ pipeline {
         stage('Commit and Push Version') {
             steps {
                 script {
-                    bat "git config user.email \"jenkins@my-company.com\""
-                    bat "git config user.name \"Jenkins\""
-                    bat "git add Version.text"
-                    bat "git commit -m \"[ci skip] Update version to ${env.NEW_VERSION}\""
-                    bat "git push origin main"
+                    bat 'git config user.email "jenkins@my-company.com"'
+                    bat 'git config user.name "Jenkins"'
+                    bat 'git add Version.text'
+                    bat "git commit -m \"[ci skip] Update version to ${env.NEW_VERSION}\" || echo No changes to commit"
+                    bat 'git push origin main'
                 }
             }
         }
-        stage('build') {
+        stage('Build Project') {
             steps {
-                bat 'echo building project...'
+                bat 'echo Building project...'
             }
         }
-        stage('docker build & push to DOCKER HUB') {
+        stage('Docker Build & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'login-to-dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
-                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD%"
-                        bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
-                    }
+                script {
+                    bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
+                    bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
                 }
             }
         }
     }
+}
+
 }
 
 
