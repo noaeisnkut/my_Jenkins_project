@@ -10,7 +10,7 @@ pipeline {
         stage('Check Commit for CI Skip') {
             steps {
                 script {
-                    def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+                    def commitMessage = bat(returnStdout: true, script: 'git log -1 --pretty=format:%B').trim()
                     if (commitMessage.contains('[ci skip]')) {
                         echo "Commit message contains '[ci skip]', skipping this build to prevent a build loop."
                         error('Build aborted by Jenkinsfile due to [ci skip] tag.')
