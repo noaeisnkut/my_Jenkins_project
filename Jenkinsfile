@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisncut/my_Jenkins_project.git'
+                git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
             }
         }
         stage('Update Version') {
