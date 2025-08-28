@@ -9,11 +9,10 @@ pipeline {
         stage('Check Commit') {
             steps {
                 script {
-                    def author = bat(script: 'git log -1 --pretty=format:"%an"', returnStdout: true).trim().toLowerCase()
-                    def message = bat(script: 'git log -1 --pretty=format:"%s"', returnStdout: true).trim()
+                    def author = bat(script: 'git log -1 --pretty=format:%an', returnStdout: true).trim().toLowerCase()
+                    def message = bat(script: 'git log -1 --pretty=format:%s', returnStdout: true).trim()
                     echo "Last commit author: '${author}'"
                     echo "Last commit message: '${message}'"
-
                     if (author.contains("jenkins") || message.contains("Jenkins auto version update")) {
                         currentBuild.result = 'NOT_BUILT'
                         error("Skipping build for Jenkins commit")
