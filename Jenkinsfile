@@ -9,9 +9,9 @@ pipeline {
         stage('Check Commit') {
             steps {
                 script {
-                    def author = bat(script: 'cmd /c git log -1 --pretty=format:%an', returnStdout: true).trim().toLowerCase()
-                    def message = bat(script: 'cmd /c git log -1 --pretty=format:%s', returnStdout: true).trim()
-                    
+                    def author = powershell(returnStdout: true, script: 'git log -1 --pretty=format:%an').trim().toLowerCase()
+                    def message = powershell(returnStdout: true, script: 'git log -1 --pretty=format:%s').trim()
+
                     echo "Last commit author: '${author}'"
                     echo "Last commit message: '${message}'"
 
@@ -48,26 +48,26 @@ pipeline {
         stage('Commit and Push Version') {
             steps {
                 script {
-                    bat 'git config user.email "jenkins@my-company.com"'
-                    bat 'git config user.name "Jenkins"'
-                    bat 'git add Version.text'
-                    bat 'git commit -m "Jenkins auto version update to ${env.NEW_VERSION}" || echo No changes to commit'
-                    bat 'git push origin main'
+                    powershell 'git config user.email "jenkins@my-company.com"'
+                    powershell 'git config user.name "Jenkins"'
+                    powershell 'git add Version.text'
+                    powershell 'git commit -m "Jenkins auto version update to ${env.NEW_VERSION}" || echo No changes to commit'
+                    powershell 'git push origin main'
                 }
             }
         }
 
         stage('Build Project') {
             steps {
-                bat "echo Building project..."
+                powershell 'echo Building project...'
             }
         }
 
         stage('Docker Build & Push') {
             steps {
                 script {
-                    bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
-                    bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
+                    powershell "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
+                    powershell "docker push noa10203040/simple_image:${env.NEW_VERSION}"
                 }
             }
         }
