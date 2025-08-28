@@ -1,18 +1,25 @@
 pipeline {
   agent any
+
   stages {
     stage('Checkout') {
       steps {
-        git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
+        git branch: 'main',
+            credentialsId: 'log-in-to-github',
+            url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
       }
     }
+
     stage('Skip if Jenkins commit') {
       steps {
         script {
-          // On Windows nodes
+          // משיכת הודעת קומיט ואימייל המחבר
           def lastMsg   = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
           def lastEmail = bat(returnStdout: true, script: 'git log -1 --pretty=%ae').trim()
-          if (lastEmail.equalsIgnoreCase('jenkins@my-company.com') || lastMsg.contains('[skip ci]') || lastMsg.contains('[ci skip]')) {
+
+          if (lastEmail.equalsIgnoreCase('jenkins@my-company.com') ||
+              lastMsg.contains('[skip ci]') ||
+              lastMsg.contains('[ci skip]')) {
             echo "Skipping build triggered by Jenkins' own version-bump commit."
             currentBuild.result = 'NOT_BUILT'
             error('Stop pipeline')
@@ -32,6 +39,7 @@ pipeline {
           def newVersion = "${major}.${minor}.${patch}"
           writeFile file: "Version.text", text: newVersion
           env.NEW_VERSION = newVersion
+          echo "Updated version to: ${env.NEW_VERSION}"
         }
       }
     }
@@ -39,26 +47,31 @@ pipeline {
     stage('Commit and Push Version') {
       steps {
         script {
-          // Commit only if there are staged changes, and only then push
-          bat '''
-          git config user.email "jenkins@my-company.com"
-          git config user.name "Jenkins"
-          git add Version.text
-          setlocal enabledelayedexpansion
-          git diff --cached --quiet && (echo No changes to commit & set COMMITTED=0) || (git commit -m "[skip ci] Update version to %NEW_VERSION%" & set COMMITTED=1)
-          if "!COMMITTED!"=="1" git push origin main
-          '''
+          bat """
+            git config user.email "jenkins@my-company.com"
+            git config user.name "Jenkins"
+            git add Version.text
+            git diff --cached --quiet && (echo No changes to commit) || (
+              git commit -m "[skip ci] Update version to ${env.NEW_VERSION}" 
+              git push origin main
+            )
+          """
         }
       }
     }
 
-    stage('Build Project') { steps { bat "echo Building project..." } }
+    stage('Build Project') {
+      steps {
+        bat "echo Building project..."
+      }
+    }
 
     stage('Docker Build & Push') {
       steps {
-        bat "docker build -t noa10203040/simple_image:%NEW_VERSION% ."
-        bat "docker push noa10203040/simple_image:%NEW_VERSION%"
+        bat "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
+        bat "docker push noa10203040/simple_image:${env.NEW_VERSION}"
       }
     }
   }
 }
+
