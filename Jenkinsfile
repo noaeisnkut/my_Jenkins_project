@@ -14,7 +14,7 @@ pipeline {
                     def major = parts[0].toInteger()
                     def minor = parts[1].toInteger()
                     def patch = parts[2].toInteger()
-                    patch ++ 1
+                    patch += 1
                     def newVersion = "${major}.${minor}.${patch}"
                     writeFile file: "Version.text", text: newVersion
                     env.NEW_VERSION = newVersion
