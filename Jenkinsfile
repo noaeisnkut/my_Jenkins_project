@@ -28,7 +28,7 @@ pipeline {
                     bat 'git config user.name "Jenkins"'
                     bat 'git add Version.text'
                     bat 'git commit -m \"[ci skip] Update version to ${env.NEW_VERSION}\" || echo No changes to commit'
-                    bat 'git push -o ci.skip'
+                    bat 'git push --set-upstream origin main -o ci.skip'
                 }
             }
         }
