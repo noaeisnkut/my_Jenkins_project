@@ -14,13 +14,16 @@ pipeline {
       steps {
         script {
           // הודעת קומיט ואימייל מחבר
-          def lastMsg   = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-          def lastEmail = bat(returnStdout: true, script: 'git log -1 --pretty=%ae').trim()
+          def lastMsg   = bat(returnStdout: true, script: '@echo off && git log -1 --pretty=%%B').trim()
+          def lastEmail = bat(returnStdout: true, script: '@echo off && git log -1 --pretty=%%ae').trim()
+
+          echo "Last commit message: ${lastMsg}"
+          echo "Last commit author: ${lastEmail}"
 
           if (lastEmail.equalsIgnoreCase('jenkins@my-company.com') ||
               lastMsg.contains('[skip ci]') ||
               lastMsg.contains('[ci skip]')) {
-            echo "Skipping build triggered by Jenkins' own version-bump commit."
+            echo "Skipping build triggered by Jenkins' own commit."
             currentBuild.result = 'NOT_BUILT'
             error('Stop pipeline')
           }
@@ -48,12 +51,16 @@ pipeline {
       steps {
         script {
           bat """
+            @echo off
             git config user.email "jenkins@my-company.com"
             git config user.name "Jenkins"
             git add Version.text
-            git diff --cached --quiet && (echo No changes to commit) || (
+            git diff --cached --quiet
+            if errorlevel 1 (
               git commit -m "[skip ci] Update version to ${env.NEW_VERSION}"
               git push origin main
+            ) else (
+              echo No changes to commit
             )
           """
         }
@@ -83,5 +90,4 @@ pipeline {
     }
   }
 }
-
 
