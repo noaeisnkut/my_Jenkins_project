@@ -1,5 +1,13 @@
 pipeline {
     agent any
+    options {
+        disableConcurrentBuilds()
+    }
+    triggers {
+        pollSCM('H/5 * * * *') {
+            ignorePostCommitHooks()
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -28,7 +36,7 @@ pipeline {
                     bat 'git config user.name "Jenkins"'
                     bat 'git add Version.text'
                     bat 'git commit -m "Jenkins auto version update to ${env.NEW_VERSION}" || echo No changes to commit'
-                    bat 'git push --set-upstream origin main'
+                    bat 'git push origin main'
                 }
             }
         }
@@ -47,3 +55,4 @@ pipeline {
         }
     }
 }
+
