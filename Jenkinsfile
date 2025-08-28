@@ -1,19 +1,21 @@
 pipeline {
     agent any
+
     options {
         disableConcurrentBuilds()
     }
+
     triggers {
-        pollSCM('H/5 * * * *') {
-            ignorePostCommitHooks()
-        }
+        pollSCM('H/5 * * * *')
     }
+
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
             }
         }
+
         stage('Update Version') {
             steps {
                 script {
@@ -29,6 +31,7 @@ pipeline {
                 }
             }
         }
+
         stage('Commit and Push Version') {
             steps {
                 script {
@@ -40,11 +43,13 @@ pipeline {
                 }
             }
         }
+
         stage('Build Project') {
             steps {
                 bat "echo Building project..."
             }
         }
+
         stage('Docker Build & Push') {
             steps {
                 script {
