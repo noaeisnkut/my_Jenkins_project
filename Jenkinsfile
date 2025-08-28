@@ -13,7 +13,7 @@ pipeline {
     stage('Skip if Jenkins commit') {
       steps {
         script {
-          // משיכת הודעת קומיט ואימייל המחבר
+          // הודעת קומיט ואימייל מחבר
           def lastMsg   = bat(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
           def lastEmail = bat(returnStdout: true, script: 'git log -1 --pretty=%ae').trim()
 
@@ -52,7 +52,7 @@ pipeline {
             git config user.name "Jenkins"
             git add Version.text
             git diff --cached --quiet && (echo No changes to commit) || (
-              git commit -m "[skip ci] Update version to ${env.NEW_VERSION}" 
+              git commit -m "[skip ci] Update version to ${env.NEW_VERSION}"
               git push origin main
             )
           """
@@ -73,5 +73,15 @@ pipeline {
       }
     }
   }
+
+  post {
+    success {
+      echo "✅ Pipeline completed successfully with version ${env.NEW_VERSION}"
+    }
+    failure {
+      echo "❌ Pipeline failed. Please check the logs."
+    }
+  }
 }
+
 
