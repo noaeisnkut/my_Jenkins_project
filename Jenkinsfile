@@ -5,11 +5,19 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    triggers {
-        pollSCM('H/5 * * * *')
-    }
-
     stages {
+        stage('Check Author') {
+            steps {
+                script {
+                    def author = bat(script: 'git log -1 --pretty=format:%an', returnStdout: true).trim()
+                    if (author == 'Jenkins') {
+                        currentBuild.result = 'NOT_BUILT'
+                        error("Skipping build for Jenkins commit")
+                    }
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git branch: 'main', credentialsId: 'log-in-to-github', url: 'git@github.com:noaeisnkut/my_Jenkins_project.git'
