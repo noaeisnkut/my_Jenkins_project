@@ -48,26 +48,34 @@ pipeline {
         stage('Commit and Push Version') {
             steps {
                 script {
-                    powershell 'git config user.email "jenkins@my-company.com"'
-                    powershell 'git config user.name "Jenkins"'
-                    powershell 'git add Version.text'
-                    powershell 'git commit -m "Jenkins auto version update to ${env.NEW_VERSION}" || echo No changes to commit'
-                    powershell 'git push origin main'
+                    powershell """
+                        git config user.email "jenkins@my-company.com"
+                        git config user.name "Jenkins"
+                        git add Version.text
+                        if (-not (git diff --cached --quiet)) {
+                            git commit -m "Jenkins auto version update to ${env.NEW_VERSION}"
+                            git push origin main
+                        } else {
+                            Write-Output "No changes to commit"
+                        }
+                    """
                 }
             }
         }
 
         stage('Build Project') {
             steps {
-                powershell 'echo Building project...'
+                bat "echo Building project..."
             }
         }
 
         stage('Docker Build & Push') {
             steps {
                 script {
-                    powershell "docker build -t noa10203040/simple_image:${env.NEW_VERSION} ."
-                    powershell "docker push noa10203040/simple_image:${env.NEW_VERSION}"
+                    powershell """
+                        docker build -t noa10203040/simple_image:${env.NEW_VERSION} .
+                        docker push noa10203040/simple_image:${env.NEW_VERSION}
+                    """
                 }
             }
         }
