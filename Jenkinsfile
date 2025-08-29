@@ -13,7 +13,6 @@ pipeline {
     stage('Skip if Jenkins commit') {
       steps {
         script {
-          // הודעת קומיט ואימייל מחבר
           def lastMsg   = bat(returnStdout: true, script: '@echo off && git log -1 --pretty=%%B').trim()
           def lastEmail = bat(returnStdout: true, script: '@echo off && git log -1 --pretty=%%ae').trim()
 
@@ -80,14 +79,4 @@ pipeline {
       }
     }
   }
-
-  post {
-    success {
-      echo "✅ Pipeline completed successfully with version ${env.NEW_VERSION}"
-    }
-    failure {
-      echo "❌ Pipeline failed. Please check the logs."
-    }
-  }
-}
 
